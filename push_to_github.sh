@@ -11,15 +11,15 @@ then
     git add $full_name
 
     # Commit the file
-    if [ $c_message ]
+    if [ "$c_message" ]
     then
-        `git commit -m "${c_message}"`
+        git commit -m "$c_message"
     else
-        `git commit -m "Added ${file_name} assignment."`
+        git commit -m "Added $file_name assignment."
     fi
-    
+
     # push to github
-    `git push origin main`
+    git push origin main
 
     echo "Your file $file_name pushed to github."
 else
