@@ -5,11 +5,11 @@ from argparse import ArgumentParser
 
 
 def git_commit(message):
-    os.system(f'git commit -m {message}')
+    os.system(f'git commit -m "{message}"')
 
 
-def git_add(filename):
-    os.system(f'git add {filename}')
+def git_add(filename: str):
+    os.system(f'git add "{filename}"')
 
 
 def commit_assignment(filename: str | None, commit_message: str | None):
@@ -24,7 +24,7 @@ def commit_assignment(filename: str | None, commit_message: str | None):
         exit()
 
     # Check commit message
-    if commit_message and filename.split('/')[-1] in commit_message:
+    if commit_message:
         git_commit(commit_message)
     else:
         git_commit(f"Added {filename.split('/')[-1]} assignment.")
