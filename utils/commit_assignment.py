@@ -30,6 +30,15 @@ def commit_assignment(filename: str | None, commit_message: str | None):
         git_commit(f"Added {filename.split('/')[-1]} assignment.")
 
 
+def get_link_to_submit(filename: str) -> str:
+    github_link = 'https://github.com/arv-anshul/pw-impact-batch/blob/main/'
+
+    MONTH, DATE = filename.split('/')
+    link_to_answer_sheet = f'{MONTH}/{DATE}/{DATE} - Answer.ipynb'
+
+    return github_link + link_to_answer_sheet.replace(' ', r'%20')
+
+
 def main():
     parser = ArgumentParser()
 
@@ -44,6 +53,8 @@ def main():
     # Finally commit the file
     commit_assignment(filename=args.file_name,
                       commit_message=args.commit_message)
+
+    os.system('echo ' + get_link_to_submit(filename=args.file_name))
 
 
 if __name__ == '__main__':
