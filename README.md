@@ -2,6 +2,12 @@
 
 This repo contains all the **assignments** present in the Impact batch. There is also some **quizzes** in the batch but it was emmbedded in the website.
 
+## Assignment Leaderboard 🥇
+
+<img src="./img/1.png" height=100>
+<img src="./img/2.png" height=100>
+<img src="./img/3.png" height=100>
+
 ## Additional
 
 1. My repo's file structure:
