@@ -1,0 +1,16 @@
+requests
+flask
+plotly
+pandas
+numpy
+seaborn
+matplotlib
+bokeh
+# xyzservices > bokeh
+
+# For nlp-project
+dill
+scikit-learn
+pandas
+nltk
+streamlit
