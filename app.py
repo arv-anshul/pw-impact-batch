@@ -2,17 +2,23 @@
 
 from webbrowser import open_new_tab
 
+import pandas as pd
 import streamlit as st
 from streamlit import logger
+from streamlit.components import v1
 
 from nlp_project.src import Getter
 from nlp_project.src.components import DataAccessor, Model
+from nlp_project.src.utils import display_ipynb_as_html
 
 # Page config
 st.set_page_config('Assignments Solutions', '🗒️', 'wide')
 
 # Streamlit logger
 log = logger.get_logger(__name__)
+
+# Display ipynb notebook as html
+display_func = st.cache_resource(display_ipynb_as_html)
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 # Streamlit Sidebar
@@ -27,7 +33,8 @@ with st.sidebar:
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 # Text to Vec Model
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
-df = DataAccessor().main_df()
+data_accessor = DataAccessor()
+df = data_accessor.main_df()
 model = Model(df)
 
 if use_algo == 'TfidfVectorizer':
@@ -72,3 +79,18 @@ if checkbox:
         pdf_link = parser.get_link('pdf')
         open_new_tab(pdf_link)
         log.info('Access: %s', pdf_link)
+
+    if st.button('Display Solution Notebook', use_container_width=True):
+        ipynb_file = parser.get_solution_file_name()
+        with open(ipynb_file) as f:
+            ipynb_file_content = f.read()
+
+        # Notebook details
+        index = similarity[0][0]
+        topics = data_accessor.df_with_topics().loc[index]
+        st.write(
+            f"#### 📌 Solution at :red[Q{topics['qno']}] of :red[{topics['sectionsTitle']}] topic."
+        )
+
+        body = display_func(ipynb_file_content)
+        v1.html(body, height=800, scrolling=True)

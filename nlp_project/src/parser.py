@@ -2,6 +2,7 @@
 
 from calendar import month_name
 from dataclasses import dataclass
+from pathlib import Path
 from typing import List, Literal
 
 from pandas import DataFrame
@@ -30,3 +31,12 @@ class Getter:
 
     def qno(self, index: int | List[int]):
         return self.df.loc[index]['qno']
+
+    def get_solution_file_name(self):
+        df_index = self.similarity[0][0]
+        filename = self.df.loc[df_index]['name']
+
+        # Calculate path to notebook
+        month_folder = [i for i in month_name if filename[3:6] in i][0]
+
+        return Path().joinpath(month_folder, filename[:6], filename)

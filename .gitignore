@@ -13,5 +13,6 @@
 **/*__rough__*.*
 
 # Ignore directories
+logs/
 **/raw/
 **/artifacts/

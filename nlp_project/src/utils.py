@@ -2,6 +2,8 @@ from datetime import date
 from pathlib import Path
 
 import dill
+import nbformat
+from nbconvert.exporters.html import HTMLExporter
 
 from .logger import logging
 
@@ -34,3 +36,12 @@ def load_object(file_path):
 class ProjectPaths:
     temp_storage_path: Path = Path('nlp_project/artifacts')
     logs_path: Path = Path('nlp_project/logs')
+
+
+def display_ipynb_as_html(ipynb_file_content):
+    """ Display **ipynb notebook** as **HTML** """
+    notebook = nbformat.reads(ipynb_file_content, as_version=4)
+    exporter = HTMLExporter()
+    body, _ = exporter.from_notebook_node(notebook)
+
+    return body
