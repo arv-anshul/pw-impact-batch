@@ -1,8 +1,5 @@
 """ A streamlit web application. """
 
-from webbrowser import open_new_tab
-
-import pandas as pd
 import streamlit as st
 from streamlit import logger
 from streamlit.components import v1
@@ -69,18 +66,13 @@ if checkbox:
 
     st.table(top_df.drop(columns=['name', 'qno']))
 
-    # Buttons
-    if st.button('Solution Notebook', use_container_width=True):
-        notebook_link = parser.get_link()
-        open_new_tab(notebook_link)
-        log.info('Access: %s', notebook_link)
+    notebook_link = parser.get_link().replace(' ', '%20')
+    pdf_link = parser.get_link('pdf').replace(' ', '%20')
+    _, col1, col2 = st.columns([0.25, 0.25, 0.5])
+    col1.markdown(f'### [Solution Notebook]({notebook_link})')
+    col2.markdown(f'### [Assignment PDF]({pdf_link})')
 
-    if st.button('Assignment PDF', use_container_width=True):
-        pdf_link = parser.get_link('pdf')
-        open_new_tab(pdf_link)
-        log.info('Access: %s', pdf_link)
-
-    if st.button('Display Solution Notebook', use_container_width=True):
+    if st.button('**Display Solution Notebook**', use_container_width=True):
         ipynb_file = parser.get_solution_file_name()
         with open(ipynb_file) as f:
             ipynb_file_content = f.read()
@@ -94,3 +86,4 @@ if checkbox:
 
         body = display_func(ipynb_file_content)
         v1.html(body, height=800, scrolling=True)
+        st.balloons()
