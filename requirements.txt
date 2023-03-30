@@ -17,3 +17,6 @@ streamlit
 nbformat
 nbconvert
 mistune
+
+# For make-readme-files script
+PyPDF2==3.0.1
