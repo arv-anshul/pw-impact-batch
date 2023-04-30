@@ -7,7 +7,7 @@ from typing import List
 
 from nltk.stem.porter import PorterStemmer
 from pandas import DataFrame
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 from nlp_project.src import ProjectPaths, load_object, save_object
@@ -29,13 +29,6 @@ class Model:
         s = re.sub(f'[{punctuation}]', '', s)
         return self.__stemming(s)
 
-    def count_vectorizer(self, max_features: int = 1000) -> CountVectorizer:
-        vectorizer = CountVectorizer(max_features=max_features,
-                                     stop_words='english',
-                                     preprocessor=self.__preprocessor)
-        logging.info('Using Vectorizer: CountVectorizer')
-        return vectorizer
-
     def tfidf_vectorizer(self, max_features: int = 1000) -> TfidfVectorizer:
         vectorizer = TfidfVectorizer(max_features=max_features,
                                      stop_words='english',
@@ -45,13 +38,13 @@ class Model:
 
     def get_similarity(
         self,
-        vectorizer: CountVectorizer | TfidfVectorizer,
+        vectorizer: TfidfVectorizer,
         query: str,
     ) -> List[tuple[int, int]]:
         """Get the similarity of **query** by providing the **vectorizer**.
 
         Args:
-            vectorizer (CountVectorizer | TfidfVectorizer): Text to Vector algorithm.
+            vectorizer (TfidfVectorizer): Text to Vector algorithm.
             query (str): A question from the assignment.
 
         Returns:
