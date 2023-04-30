@@ -4,11 +4,11 @@ This repo contains all the **assignments** present in the Impact batch. There is
 
 ## Table of Content
 
-- [Assignment Leaderboard](#assignment-leaderboard-🥇)
-- [Repoistory File Structure](#repo-structure-📁)
-- [Additional Features](#additional-features-📌)
-  - [Automate the assignment folder creation](#automate-the-assignment-folder-creation-🤖)
-  - [Automate git commit shell command](#automate-git-commit-shell-command-🤖)
+- [Assignment Leaderboard](#assignment-leaderboard-)
+- [Repoistory File Structure](#repo-structure-)
+- [Additional Features](#additional-features-)
+  - [Automate the assignment folder creation](#automate-the-assignment-folder-creation-)
+  - [Automate git commit shell command](#automate-git-commit-shell-command-)
   - [Impact Batch Assignments Solution](#impact-batch-assignments-solution)
   - [PW Courses Analysis](#pw-courses-analysis)
   - [PW Skills Experience Portal](#pw-skills-experience-portal)
