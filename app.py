@@ -9,7 +9,7 @@ from nlp_project.src.components import DataAccessor, Model
 from nlp_project.src.utils import display_ipynb_as_html
 
 # Page config
-st.set_page_config('Assignments Solutions', '🗒️', 'wide')
+st.set_page_config('Impact Batch Assignments Solutions', '🗒️', 'wide')
 
 # Streamlit logger
 log = logger.get_logger(__name__)
@@ -18,31 +18,17 @@ log = logger.get_logger(__name__)
 display_func = st.cache_resource(display_ipynb_as_html)
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
-# Streamlit Sidebar
-# --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
-with st.sidebar:
-    use_algo = st.selectbox('Select Vectorizer',
-                            ['CountVectorizer', 'TfidfVectorizer'])
-    log.info('Using Vectorizer: %s', use_algo)
-    show_top = st.select_slider('Show TOP X similar questions',
-                                range(3, 16, 2), 5)
-
-# --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 # Text to Vec Model
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 data_accessor = DataAccessor()
 df = data_accessor.main_df()
 model = Model(df)
-
-if use_algo == 'TfidfVectorizer':
-    vectorizer = model.tfidf_vectorizer()
-else:
-    vectorizer = model.count_vectorizer()
+vectorizer = model.tfidf_vectorizer()
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 # Streamlit Page
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
-st.title('Get Assignment solution.')
+st.title('Get Impact Batch Assignment solution.')
 query = st.text_input('Enter assignment question')
 log.info('Query: %s', query)
 checkbox = st.checkbox('Get Solution')
@@ -57,11 +43,11 @@ if checkbox:
         st.warning('**Provided Solution maybe wrong.**', icon='🚨')
 
     # Top 5 similar questions
-    st.subheader(f'Top {show_top} Similar Questions')
+    st.subheader(f'Top 5 Similar Questions')
 
-    top_df = df.loc[[i for i, _ in similarity[:show_top]]]
+    top_df = df.loc[[i for i, _ in similarity[:5]]]
     top_df.insert(1, 'similarity',
-                  [round(j*100) for _, j in similarity[:show_top]])
+                  [round(j*100) for _, j in similarity[:5]])
     top_df['similarity'] = top_df['similarity'].astype(str).add('%')
 
     st.table(top_df.drop(columns=['name', 'qno']))
