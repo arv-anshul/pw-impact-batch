@@ -2,11 +2,19 @@
 
 This repo contains all the **assignments** present in the Impact batch. There is also some **quizzes** in the batch but it was embedded in the website.
 
-This repo also contains a [_automation script_](./utils/assignment.py) which helps you to make [_new assignment folder_](#automate-the-assignment-folder-creation-🤖) in **no time**.
+## Table of Content
 
-Also, automate the `git add && git commit` command with python. [Script Here](./utils/commit_assignment.py). This script add and commit the assignment and then provide you the _github repo link_\* also.
-
-> \* For this feature you have to modify the script.
+- [Assignment Leaderboard](#assignment-leaderboard-🥇)
+- [Repoistory File Structure](#repo-structure-📁)
+- [Additional Features](#additional-features-📌)
+  - [Automate the assignment folder creation](#automate-the-assignment-folder-creation-🤖)
+  - [Automate git commit shell command](#automate-git-commit-shell-command-🤖)
+  - [Impact Batch Assignments Solution](#impact-batch-assignments-solution)
+  - [PW Courses Analysis](#pw-courses-analysis)
+  - [PW Skills Experience Portal](#pw-skills-experience-portal)
+  - [PW Skills API](#pw-skills-api)
+  - [PW Skills Custom Theme](#pw-skills-custom-theme)
+- [Creator](#created-by-arv-anshul)
 
 ## Assignment Leaderboard 🥇
 
@@ -34,7 +42,7 @@ date-f --> 1{{Answer.ipynb}}
 date-f --> 2{{Question.pdf}}
 ```
 
-## Additional Projects 📌
+## Additional Features 📌
 
 ### Automate the assignment folder creation 🤖
 
@@ -72,35 +80,37 @@ python3 utils/commit_assignment.py --file-name February/07\ Feb
     # The default commit message is "Added <<file_name>> assignment."
 ```
 
-### PW Course assignment solution
+### Impact Batch Assignments Solution
 
-> #### **Note:** This project is only done on **Data Science Masters**.
-
-[Website Link](https://pw-assignment-solution.streamlit.app/)
+[![Streamlit Badge](https://img.shields.io/badge/Solutions-FF4B4B?logo=streamlit&logoColor=fff&style=flat-square)](https://pw-assignment-solution.streamlit.app/)
 
 [![Assignment Solution Web Page](./img/assignment-solution-web-page.png)](https://pw-assignment-solution.streamlit.app/)
 
-### PW Skills all course overview in a web page.
+### PW Courses Analysis
 
-I perform analysis on PW all courses and turn them into web pages. Different analysis are as follows:
+1. [**Courses Syllabus Analysis**](https://github.com/arv-anshul/working-with-pw-api/blob/main/analysis/_course_analysis.ipynb)
+2. [**Live Courses Analysis**](https://github.com/arv-anshul/working-with-pw-api/blob/main/analysis/live_course_analysis.ipynb)
+3. [**All Courses Analytics**](https://github.com/arv-anshul/working-with-pw-api/blob/main/analysis/course_analytics.ipynb): Shows the top students in their respective courses.
 
-1. **Course syllabus or preview analysis** for each course. [Notebook Link](https://github.com/arv-anshul/working-with-pw-api/blob/main/analysis/_course_analysis.ipynb)
-2. **Live course analysis** for each course. [Notebook Link](https://github.com/arv-anshul/working-with-pw-api/blob/main/analysis/live_course_analysis.ipynb)
-3. **All course analytics page** which shows the Top students in their respective courses. [Notebook Link](https://github.com/arv-anshul/working-with-pw-api/blob/main/analysis/course_analytics.ipynb)
+### PW Skills Experience Portal
 
-### PW Skills Experience Portal.
+See all the projects provided by PW Skills _(the projects are all same as Ineron's Internship Portal)_. This helps you to choose project in many different domain with different technology.
 
-Using this project you can easily choose your project on the basis of difficulty, field, language, etc. [Link](https://github.com/arv-anshul/pw-experience-portal)
+[![Streamlit Badge](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=fff&style=flat-square)](https://arv-anshul-pw-experience-portal-streamlit-app-uvuzcn.streamlit.app)
+[![Github Badge](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=fff&style=flat-square)](https://github.com/arv-anshul/pw-experience-portal)
 
-### PW Skills Course API analysis.
+### PW Skills API
 
-I fetches data from PW Skills API to make a web page and done some analysis with the data and turn it into a web page.
+Using **PW Skills API** I analyze all their courses in **Jupyter Notebook** and made a **streamlit app**.
 
-Clone the repo to see the analysis [repository link](https://github.com/arv-anshul/working-with-pw-api).
+[![Streamlit Badge](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=fff&style=flat-square)](https://arv-anshul-working-with-pw-api-app-c056zb.streamlit.app)
+[![GitHub Badge](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=fff&style=flat-square)](https://github.com/arv-anshul/working-with-pw-api)
 
-### PW Course web page custom theme.
+### PW Skills Custom Theme
 
-PW Skills original theme is very light and has many clutters in it. But I removed them and make it more focused towards learning.
+**PW Skills's web page** default theme is very bright and has many clutters like chatbot, social links bar, etc. Using this theme you can remove them and make the web page more focused towards for learning your course.
+
+[![Custom Theme Badge](https://img.shields.io/badge/PW%20Custom%20Theme-7033FD?logo=fireship&logoColor=fff&style=for-the-badge)](https://userstyles.world/style/8474/cleaned-pwskills-com)
 
 [![Original Theme](./img/pw-skills-org-theme.png)](https://userstyles.world/style/8474/cleaned-pwskills-com)
 
