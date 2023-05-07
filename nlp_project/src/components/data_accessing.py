@@ -73,7 +73,7 @@ class DataAccessor:
                                    .str.rsplit(' ', n=1)
                                    .str.get(0)
                                    .add(' 2023')
-                                   .astype('datetime64')
+                                   .astype('datetime64[ns]')
                                    )
         topics_df.loc[viz_rows.index, 'date'] = viz_rows['date']
 
@@ -91,7 +91,7 @@ class DataAccessor:
             [['sectionsTitle', 'date']]
             .drop_duplicates()
         )
-        topics['date'] = topics['date'].astype('datetime64')
+        topics['date'] = topics['date'].astype('datetime64[ns]')
         self.__manage_viz_rows(topics)
 
         # --- --- master_df --- --- #
