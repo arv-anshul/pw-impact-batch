@@ -1,6 +1,5 @@
 import json
 from calendar import month_name
-from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
@@ -67,13 +66,14 @@ class DataAccessor:
         self.__export_df(df, self.master_csv_path)
         return df
 
-    def __manage_viz_rows(self, topics_df):
+    def __manage_viz_rows(self, topics_df: pd.DataFrame):
         viz_rows = topics_df[topics_df['date'].duplicated(keep='last')].tail(3)
         viz_rows.loc[:, 'date'] = (viz_rows['sectionsTitle']
                                    .str.rsplit(' ', n=1)
                                    .str.get(0)
                                    .add(' 2023')
-                                   .astype('datetime64[ns]')
+                                   .str.replace(r'\w{2} ', ' ', regex=True)
+                                   .astype('datetime64[s]')
                                    )
         topics_df.loc[viz_rows.index, 'date'] = viz_rows['date']
 
@@ -91,7 +91,7 @@ class DataAccessor:
             [['sectionsTitle', 'date']]
             .drop_duplicates()
         )
-        topics['date'] = topics['date'].astype('datetime64[ns]')
+        topics['date'] = topics['date'].astype('datetime64[s]')
         self.__manage_viz_rows(topics)
 
         # --- --- master_df --- --- #
@@ -106,7 +106,7 @@ class DataAccessor:
         df['date'] = (df['name']
                       .str.replace(' - Answer.ipynb', '', regex=False)
                       .add(' 2023')
-                      .astype('datetime64')
+                      .astype('datetime64[s]')
                       )
 
         # --- --- final_df --- --- #
