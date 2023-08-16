@@ -4,14 +4,12 @@ import streamlit as st
 from streamlit import logger
 from streamlit.components import v1
 
-from nlp_project.src import Getter
+from nlp_project.src import DataFetcher
 from nlp_project.src.components import DataAccessor, Model
 from nlp_project.src.utils import display_ipynb_as_html
 
-# Page config
 st.set_page_config('Impact Batch Assignments Solutions', '🗒️', 'wide')
 
-# Streamlit logger
 log = logger.get_logger(__name__)
 
 # Display ipynb notebook as html
@@ -35,7 +33,7 @@ checkbox = st.checkbox('Get Solution')
 
 # --- --- Parser Object --- --- #
 similarity = model.get_similarity(vectorizer, query)
-parser = Getter(df, similarity)
+parser = DataFetcher(df, similarity)
 
 if checkbox:
     # Check the solution's reliability
@@ -43,11 +41,10 @@ if checkbox:
         st.warning('**Provided Solution maybe wrong.**', icon='🚨')
 
     # Top 5 similar questions
-    st.subheader(f'Top 5 Similar Questions')
+    st.subheader('Top 5 Similar Questions')
 
     top_df = df.loc[[i for i, _ in similarity[:5]]]
-    top_df.insert(1, 'similarity',
-                  [round(j*100) for _, j in similarity[:5]])
+    top_df.insert(1, 'similarity', [round(j * 100) for _, j in similarity[:5]])
     top_df['similarity'] = top_df['similarity'].astype(str).add('%')
 
     st.table(top_df.drop(columns=['name', 'qno']))

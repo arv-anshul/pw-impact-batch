@@ -1,9 +1,7 @@
 import re
-from dataclasses import dataclass
+import warnings
 from datetime import date
-from pathlib import Path
 from string import punctuation
-from typing import List
 
 from nltk.stem.porter import PorterStemmer
 from pandas import DataFrame
@@ -13,12 +11,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 from nlp_project.src import ProjectPaths, load_object, save_object
 from nlp_project.src.logger import logging
 
+warnings.filterwarnings('ignore')
 
-@dataclass(order=False)
+
 class Model:
-    df: DataFrame
-    vectorizer_path: Path = ProjectPaths.temp_storage_path / \
-        f'{date.today():%d_%m_%y}_vectorizer.pkl'
+    def __init__(self, df: DataFrame) -> None:
+        self.df = df
+        self.vectorizer_path = (
+            ProjectPaths.temp_storage_path / f'{date.today():%d_%m_%y}_vectorizer.pkl'
+        )
 
     def __stemming(self, s: str) -> str:
         ps = PorterStemmer()
@@ -30,17 +31,15 @@ class Model:
         return self.__stemming(s)
 
     def tfidf_vectorizer(self, max_features: int = 1000) -> TfidfVectorizer:
-        vectorizer = TfidfVectorizer(max_features=max_features,
-                                     stop_words='english',
-                                     preprocessor=self.__preprocessor)
+        vectorizer = TfidfVectorizer(
+            max_features=max_features,
+            stop_words='english',
+            preprocessor=self.__preprocessor,
+        )
         logging.info('Using Vectorizer: TfidfVectorizer')
         return vectorizer
 
-    def get_similarity(
-        self,
-        vectorizer: TfidfVectorizer,
-        query: str,
-    ) -> List[tuple[int, int]]:
+    def get_similarity(self, vectorizer: TfidfVectorizer, query: str) -> list[tuple[int, int]]:
         """Get the similarity of **query** by providing the **vectorizer**.
 
         Args:
@@ -63,19 +62,14 @@ class Model:
             vec = load_object(self.vectorizer_path)
         else:
             vec = vectorizer.fit(self.df['questions'])
-            # Save vectorizer model
             save_object(file_path=self.vectorizer_path, obj=vec)
 
         vectors = vec.transform(self.df['questions']).toarray()  # type: ignore
-        q_vec = vec.transform([query]).toarray()    # type: ignore
+        q_vec = vec.transform([query]).toarray()  # type: ignore
         sim = cosine_similarity(q_vec, vectors)
 
-        pred = sorted(
-            list(enumerate(sim[0])),
-            reverse=True,
-            key=lambda x: x[1])
+        pred = sorted(list(enumerate(sim[0])), reverse=True, key=lambda x: x[1])
 
-        # Query logging
         logging.info('Query: "%s"', query)
         logging.info(f'Most similar questions: {pred[:5]}')
 

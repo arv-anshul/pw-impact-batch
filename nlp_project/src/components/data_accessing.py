@@ -10,20 +10,16 @@ from nlp_project.src.logger import logging
 
 
 class DataAccessor:
-    master_csv_path: Path = ProjectPaths.temp_storage_path / \
-        f'{date.today():%d_%m_%y}_master.csv'
-    df_with_topics_path = ProjectPaths.temp_storage_path / \
-        f'{date.today():%d_%m_%y}_df_with_topics.csv'
+    master_csv_path: Path = ProjectPaths.temp_storage_path / f'{date.today():%d_%m_%y}_master.csv'
+    df_with_topics_path = (
+        ProjectPaths.temp_storage_path / f'{date.today():%d_%m_%y}_df_with_topics.csv'
+    )
 
     def __notebooks_path(self):
         path = Path()
         months_dir = [i for i in path.iterdir() if i.name in month_name]
-        dates_dir = [date for month in months_dir
-                     for date in month.iterdir()
-                     if date.is_dir()]
-        notebooks_path = [n for date in dates_dir
-                          for n in date.iterdir()
-                          if n.suffix == '.ipynb']
+        dates_dir = [date for month in months_dir for date in month.iterdir() if date.is_dir()]
+        notebooks_path = [n for date in dates_dir for n in date.iterdir() if n.suffix == '.ipynb']
         return notebooks_path
 
     def notebook_to_df(self, md_cells: list, filename: str):
@@ -34,11 +30,12 @@ class DataAccessor:
         return df
 
     def __clean_df(self, df: pd.DataFrame):
-        df['questions'] = (df['questions']
-                           .str.replace('\n', '', regex=False)
-                           .str.replace('#', '', regex=False)
-                           .str.strip()
-                           )
+        df['questions'] = (
+            df['questions']
+            .str.replace('\n', '', regex=False)
+            .str.replace('#', '', regex=False)
+            .str.strip()
+        )
         df.reset_index(drop=True, inplace=True)
         df['qno'] = df['qno'].fillna(-1).astype(int)
 
@@ -56,9 +53,9 @@ class DataAccessor:
             data: list = json.load(open(i))['cells']
 
             md_cells: list[str] = [
-                ' '.join(i['source'][:n_sent]) for i in data
-                if i['cell_type'] == 'markdown' and
-                i['source'][0].startswith('### ')
+                ' '.join(i['source'][:n_sent])
+                for i in data
+                if i['cell_type'] == 'markdown' and i['source'][0].startswith('### ')
             ]
             df = pd.concat([df, self.notebook_to_df(md_cells, i.name)])
 
@@ -68,13 +65,14 @@ class DataAccessor:
 
     def __manage_viz_rows(self, topics_df: pd.DataFrame):
         viz_rows = topics_df[topics_df['date'].duplicated(keep='last')].tail(3)
-        viz_rows.loc[:, 'date'] = (viz_rows['sectionsTitle']
-                                   .str.rsplit(' ', n=1)
-                                   .str.get(0)
-                                   .add(' 2023')
-                                   .str.replace(r'\w{2} ', ' ', regex=True)
-                                   .astype('datetime64[s]')
-                                   )
+        viz_rows.loc[:, 'date'] = (
+            viz_rows['sectionsTitle']
+            .str.rsplit(' ', n=1)
+            .str.get(0)
+            .add(' 2023')
+            .str.replace(r'\w{2} ', ' ', regex=True)
+            .astype('datetime64[s]')
+        )
         topics_df.loc[viz_rows.index, 'date'] = viz_rows['date']
 
     def df_with_topics(self):
@@ -86,11 +84,9 @@ class DataAccessor:
 
             return topics
 
-        topics = (
-            pd.read_csv('nlp_project/data/course_details.csv')
-            [['sectionsTitle', 'date']]
-            .drop_duplicates()
-        )
+        topics = pd.read_csv('nlp_project/data/course_details.csv')[
+            ['sectionsTitle', 'date']
+        ].drop_duplicates()
         topics['date'] = topics['date'].astype('datetime64[s]')
         self.__manage_viz_rows(topics)
 
@@ -103,11 +99,12 @@ class DataAccessor:
             df = self.main_df()
 
         # Create date column in df for merging
-        df['date'] = (df['name']
-                      .str.replace(' - Answer.ipynb', '', regex=False)
-                      .add(' 2023')
-                      .astype('datetime64[s]')
-                      )
+        df['date'] = (
+            df['name']
+            .str.replace(' - Answer.ipynb', '', regex=False)
+            .add(' 2023')
+            .astype('datetime64[s]')
+        )
 
         # --- --- final_df --- --- #
         # Merge the datasets
@@ -115,10 +112,7 @@ class DataAccessor:
         print(final_df.columns)
 
         # Dataset cleaning
-        final_df = (final_df[~final_df['questions']
-                    .duplicated(keep='last')]
-                    .reset_index()
-                    )
+        final_df = final_df[~final_df['questions'].duplicated(keep='last')].reset_index()
         final_df['qno'] = final_df['qno'].fillna(0).astype(int)
         final_df['sectionsTitle'].fillna('N/A', inplace=True)
 
@@ -126,7 +120,7 @@ class DataAccessor:
         return final_df
 
     def __export_df(self, df: pd.DataFrame, path: Path) -> None:
-        """ Save df at path. """
+        """Save df at path."""
         if not path.parent.exists():
             path.parent.mkdir(exist_ok=True)
 

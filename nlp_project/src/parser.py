@@ -1,24 +1,22 @@
-""" Connection between Model and Dataset. """
-
 from calendar import month_name
-from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Literal
+from typing import Literal
 
 from pandas import DataFrame
 
 from .logger import logging
 
 
-@dataclass
-class Getter:
-    """ Fetch data from dataset using Similarity Model. """
-    df: DataFrame
-    similarity: List[tuple[int, int]]
+class DataFetcher:
+    """Fetch data from dataset using Similarity Model."""
+
+    def __init__(self, df: DataFrame, similarity: list[tuple[int, int]]) -> None:
+        self.df = df
+        self.similarity = similarity
 
     def get_link(self, type: Literal['solution', 'pdf'] = 'solution'):
         index = self.similarity[0][0]
-        name = self.df.loc[index]['name']
+        name: str = self.df.loc[index]['name']
         month_folder = [i for i in month_name if name[3:6] in i][0]
         folder_name = name.replace(' - Answer.ipynb', '')
 
@@ -29,7 +27,7 @@ class Getter:
         logging.info('Accessing link "%s"', url)
         return url
 
-    def qno(self, index: int | List[int]):
+    def qno(self, index: int | list[int]):
         return self.df.loc[index]['qno']
 
     def get_solution_file_name(self):
