@@ -1,5 +1,7 @@
+import calendar
 import re
 import warnings
+from pathlib import Path
 from string import punctuation
 
 import pandas as pd
@@ -14,7 +16,6 @@ from nlp_project import constants as C
 from nlp_project.src import utils
 from nlp_project.src.data_ingestion import DataIngestion
 from nlp_project.src.logger import logging
-from nlp_project.src.parser import DataFetcher
 
 warnings.filterwarnings("ignore")
 st.set_page_config("Impact Batch Assignments Solutions", "🗒️", "wide")
@@ -36,7 +37,11 @@ def preprocessor(s: str) -> str:
 
 
 # Store vectorizer and transformed dataframe
-if not C.VEC_PATH.exists() or not C.QUES_ARR_PATH.exists():
+if (
+    not C.VEC_PATH.exists()
+    or not C.QUES_ARR_PATH.exists()
+    or not C.QUES_WITH_TOPICS_CSV_PATH.exists()
+):
     ques_with_topics_df = DataIngestion().create_ques_with_topics_df()
     vectorizer = TfidfVectorizer(
         max_features=1_000, stop_words="english", preprocessor=preprocessor
@@ -62,21 +67,26 @@ def get_similarity(query: str) -> list[tuple[int, int]]:
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 # Streamlit Page
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
-st.title("🧩 :green[Get Impact Batch Assignment solution]")
-query = st.text_input("🖊️ Enter assignment question")
+st.header("🧩 :green[Get Impact Batch Assignment Solution]", divider="green")
+query = st.text_input("🖊️ Enter Assignment Question")
 st_log.info("Query: %s", query)
 
-
-# Stop the app if not query is passed
+# Stop the app if there is no query
 if not query:
     st.subheader("🖊️ :gray[Enter any question in the text field to get your solution]")
     st.stop()
     raise
 
-# --- --- Parser Object --- --- #
 similarity = get_similarity(query)
-parser = DataFetcher(similarity)
 ques_with_topics_df = pd.read_csv(C.QUES_WITH_TOPICS_CSV_PATH)
+
+# Calculate the notebook's file path
+# - To form links
+# - To display on web page
+best_simi_index = similarity[0][0]
+filename: str = ques_with_topics_df.loc[best_simi_index]["name"]
+folder_name = filename.replace(" - Answer.ipynb", "")
+month_folder = [i for i in calendar.month_name if filename[3:6] in i][0]
 
 # Check the solution's reliability
 if similarity[0][1] < 0.5:
@@ -90,11 +100,17 @@ top_df["similarity"] = top_df["similarity"].astype(str).add("%")
 st.table(top_df[["similarity", "sectionsTitle", "questions"]])
 
 # Display links as buttons
-notebook_link = parser.get_link("solution")
-pdf_link = parser.get_link("pdf")
+url = (
+    "https://github.com/arv-anshul/pw-impact-batch/blob/main"
+    f"/{month_folder}/{folder_name}/{filename}"
+)
 l, r = st.columns(2)
-l.link_button("Solution Notebook", notebook_link, use_container_width=True)
-r.link_button("Assignment PDF", pdf_link, use_container_width=True)
+l.link_button("Solution Notebook", url, use_container_width=True)
+r.link_button(
+    "Assignment PDF",
+    url.replace("Answer.ipynb", "Question.pdf"),
+    use_container_width=True,
+)
 
 # Button to display notebook
 if st.button(
@@ -102,7 +118,8 @@ if st.button(
     type="primary",
     use_container_width=True,
 ):
-    ipynb_file = parser.get_solution_file_name()
+    ipynb_file = Path.cwd().joinpath(month_folder, filename[:6], filename)
+    st_log.info(f"Displaying {ipynb_file!r}")
     with ipynb_file.open() as f:
         ipynb_file_content = f.read()
 
