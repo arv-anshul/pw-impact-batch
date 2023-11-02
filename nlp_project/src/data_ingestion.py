@@ -1,5 +1,5 @@
+import calendar
 import json
-from calendar import month_name
 from pathlib import Path
 
 import pandas as pd
@@ -8,10 +8,10 @@ from nlp_project import constants as C
 from nlp_project.src.logger import logging
 
 
-class DataAccessor:
+class DataIngestion:
     def __notebooks_path(self):
         path = Path()
-        months_dir = [i for i in path.iterdir() if i.name in month_name]
+        months_dir = [i for i in path.iterdir() if i.name in calendar.month_name]
         dates_dir = [
             date for month in months_dir for date in month.iterdir() if date.is_dir()
         ]
@@ -20,13 +20,7 @@ class DataAccessor:
         ]
         return notebooks_path
 
-    def notebook_to_df(self, md_cells: list, filename: str):
-        df = pd.DataFrame(md_cells).rename(columns={0: "questions"})
-        df["qno"] = df["questions"].str.extract(r"^### (?:Q|Que)\s?(\d{1,2})")
-        df["name"] = filename
-        return df
-
-    def parsed_notebook_as_df(self, n_sent: int = 1) -> pd.DataFrame:
+    def convert_notebook_as_df(self, n_sent: int = 1) -> pd.DataFrame:
         df = pd.DataFrame()
         for i in self.__notebooks_path():
             data: list = json.load(open(i))["cells"]
@@ -36,7 +30,17 @@ class DataAccessor:
                 for i in data
                 if i["cell_type"] == "markdown" and i["source"][0].startswith("### ")
             ]
-            df = pd.concat([df, self.notebook_to_df(md_cells, i.name)])
+            # Current notebook as DataFrame
+            curr_notebook_as_df = pd.DataFrame(md_cells).rename(
+                columns={0: "questions"}
+            )
+            curr_notebook_as_df["qno"] = curr_notebook_as_df["questions"].str.extract(
+                r"^### (?:Q|Que)\s?(\d{1,2})"
+            )
+            curr_notebook_as_df["name"] = i.name
+
+            # Merge current notebook with previous notebooks as DataFrame
+            df = pd.concat([df, curr_notebook_as_df])
 
         # Clean DataFrame
         df["questions"] = (
@@ -50,16 +54,8 @@ class DataAccessor:
 
         return df
 
-    def df_with_topics(self):
-        # --- --- master_df --- --- #
-        notebook_as_df = self.parsed_notebook_as_df()
-
-        # --- --- topics_df --- --- #
-        course_details_df = pd.read_csv(C.COURSE_DETAILS_CSV_PATH)[
-            ["sectionsTitle", "date"]
-        ].drop_duplicates()
-        course_details_df["date"] = course_details_df["date"].astype("datetime64[s]")
-
+    def create_ques_with_topics_df(self):
+        notebook_as_df = self.convert_notebook_as_df()
         # Create date column in df for merging
         notebook_as_df["date"] = (
             notebook_as_df["name"]
@@ -68,8 +64,12 @@ class DataAccessor:
             .astype("datetime64[s]")
         )
 
-        # --- --- final_df --- --- #
-        # Merge the datasets
+        course_details_df = pd.read_csv(C.COURSE_DETAILS_CSV_PATH)[
+            ["sectionsTitle", "date"]
+        ].drop_duplicates()
+        course_details_df["date"] = course_details_df["date"].astype("datetime64[s]")
+
+        # Merge notebook_as_df and course_details_df on date column
         ques_w_topic_df = notebook_as_df.merge(course_details_df, how="left", on="date")
 
         # Dataset cleaning

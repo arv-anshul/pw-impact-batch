@@ -12,7 +12,7 @@ from streamlit.components import v1
 
 from nlp_project import constants as C
 from nlp_project.src import utils
-from nlp_project.src.components.data_accessing import DataAccessor
+from nlp_project.src.data_ingestion import DataIngestion
 from nlp_project.src.logger import logging
 from nlp_project.src.parser import DataFetcher
 
@@ -37,12 +37,12 @@ def preprocessor(s: str) -> str:
 
 # Store vectorizer and transformed dataframe
 if not C.VEC_PATH.exists() or not C.QUES_ARR_PATH.exists():
-    df = DataAccessor().df_with_topics()
+    ques_with_topics_df = DataIngestion().create_ques_with_topics_df()
     vectorizer = TfidfVectorizer(
         max_features=1_000, stop_words="english", preprocessor=preprocessor
     )
 
-    ques_arr = vectorizer.fit_transform(df["questions"])
+    ques_arr = vectorizer.fit_transform(ques_with_topics_df["questions"])
     utils.save_object(C.VEC_PATH, vectorizer)
     utils.save_object(C.QUES_ARR_PATH, ques_arr.toarray())  # type: ignore
 
