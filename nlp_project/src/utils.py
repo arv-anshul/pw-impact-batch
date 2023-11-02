@@ -1,47 +1,42 @@
-from dataclasses import dataclass
-from datetime import date
+import functools
 from pathlib import Path
 
 import dill
 import nbformat
+import streamlit as st
 from nbconvert.exporters.html import HTMLExporter
+from streamlit.logger import get_logger
 
-from .logger import logging
+from nlp_project.src import constants as C
+
+st_logger = get_logger(__name__)
 
 
 def clean_artifacts() -> None:
-    artifacts_path = Path('nlp_project/artifacts')
-    for i in artifacts_path.iterdir():
-        if i.name[:8] != date.today().strftime('%d_%m_%y') and i.is_file():
+    """Delete outdated files which are older than a day."""
+    for i in C.ARTIFACTS_PATH.iterdir():
+        if C.TODAY not in i.name and i.is_file():
+            st_logger.info(f"Deleting {i!r}")
             i.unlink()
 
 
-def save_object(file_path: Path, obj) -> None:
-    if not file_path.parent.exists() and file_path.is_file():
-        file_path.mkdir(exist_ok=True)
-
-    with open(file_path, "wb") as f:
-        logging.info('Exporting: "%s"', file_path)
+def save_object(fp: Path, obj) -> None:
+    with fp.open("wb") as f:
+        st_logger.info('Exporting: "%s"', fp)
         dill.dump(obj, f)
-
-    # Remove outdated files
     clean_artifacts()
 
 
-def load_object(file_path):
-    logging.info('Importing: "%s"', file_path)
-    with open(file_path, "rb") as f:
+@functools.lru_cache()
+def load_object(fp: Path):
+    st_logger.info('Importing: "%s"', fp)
+    with fp.open("rb") as f:
         return dill.load(f)
 
 
-@dataclass
-class ProjectPaths:
-    temp_storage_path: Path = Path('nlp_project/artifacts')
-    logs_path: Path = Path('nlp_project/logs')
-
-
-def display_ipynb_as_html(ipynb_file_content):
-    """Display **ipynb notebook** as **HTML**"""
+@st.cache_data
+def convert_ipynb_as_html(ipynb_file_content: str):
+    """Convert Jupyter Notebook content to HTML"""
     notebook = nbformat.reads(ipynb_file_content, as_version=4)
     exporter = HTMLExporter()
     body, _ = exporter.from_notebook_node(notebook)
