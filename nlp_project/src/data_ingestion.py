@@ -5,7 +5,6 @@ from pathlib import Path
 import pandas as pd
 
 from nlp_project import constants as C
-from nlp_project.src.logger import logging
 
 
 class DataIngestion:
@@ -80,5 +79,4 @@ class DataIngestion:
         ques_w_topic_df["sectionsTitle"].fillna("N/A", inplace=True)
 
         ques_w_topic_df.to_csv(C.QUES_WITH_TOPICS_CSV_PATH, index=False)
-        logging.info(f"Export: {C.QUES_WITH_TOPICS_CSV_PATH!r}")
         return ques_w_topic_df

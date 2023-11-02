@@ -15,12 +15,11 @@ from streamlit.components import v1
 from nlp_project import constants as C
 from nlp_project.src import utils
 from nlp_project.src.data_ingestion import DataIngestion
-from nlp_project.src.logger import logging
 
 warnings.filterwarnings("ignore")
 st.set_page_config("Impact Batch Assignments Solutions", "🗒️", "wide")
 st_msg = st.container()
-st_log = logger.get_logger(__name__)
+st_logger = logger.get_logger(__name__)
 
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
@@ -59,8 +58,7 @@ def get_similarity(query: str) -> list[tuple[int, int]]:
     sim = cosine_similarity(q_vec, ques_arr)
 
     sorted_similarity = sorted(enumerate(sim[0]), key=lambda x: x[1], reverse=True)
-    logging.info('Query: "%s"', query)
-    logging.info(f"Most similar questions: {sorted_similarity[:5]}")
+    st_logger.info(f"Most similar questions: {sorted_similarity[:5]}")
     return sorted_similarity
 
 
@@ -69,7 +67,7 @@ def get_similarity(query: str) -> list[tuple[int, int]]:
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 st.header("🧩 :green[Get Impact Batch Assignment Solution]", divider="green")
 query = st.text_input("🖊️ Enter Assignment Question")
-st_log.info("Query: %s", query)
+st_logger.info("Query: %s", query)
 
 # Stop the app if there is no query
 if not query:
@@ -119,7 +117,7 @@ if st.button(
     use_container_width=True,
 ):
     ipynb_file = Path.cwd().joinpath(month_folder, filename[:6], filename)
-    st_log.info(f"Displaying {ipynb_file!r}")
+    st_logger.info(f"Displaying {ipynb_file!r}")
     with ipynb_file.open() as f:
         ipynb_file_content = f.read()
 
