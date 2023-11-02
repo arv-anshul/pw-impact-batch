@@ -7,7 +7,7 @@ import streamlit as st
 from nbconvert.exporters.html import HTMLExporter
 from streamlit.logger import get_logger
 
-from nlp_project import constants as C
+from nlp_project.src import constants as C
 
 st_logger = get_logger(__name__)
 

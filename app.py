@@ -12,7 +12,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from streamlit import logger
 from streamlit.components import v1
 
-from nlp_project import constants as C
+from nlp_project.src import constants as C
 from nlp_project.src import utils
 from nlp_project.src.data_ingestion import DataIngestion
 

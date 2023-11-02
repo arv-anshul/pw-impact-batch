@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from nlp_project import constants as C
+from nlp_project.src import constants as C
 
 
 class DataIngestion:
