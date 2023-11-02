@@ -1,3 +1,4 @@
+import functools
 from pathlib import Path
 
 import dill
@@ -25,7 +26,7 @@ def save_object(fp: Path, obj) -> None:
     clean_artifacts()
 
 
-@st.cache_data
+@functools.lru_cache()
 def load_object(fp: Path):
     logging.info('Importing: "%s"', fp)
     with fp.open("rb") as f:
