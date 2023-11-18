@@ -1,5 +1,3 @@
-from calendar import month_name
-from dataclasses import dataclass
 from pathlib import Path
 from typing import IO
 
@@ -7,112 +5,100 @@ from PyPDF2 import PdfReader
 
 
 def extract_text_from_pdf(
-    pdf_file: Path | str,
+    pdf_file: Path,
     n_page: int = 1,
-    absent_txt_to: str = 'Assignment',
+    absent_txt_to: str = "Assignment",
 ) -> list[str]:
-    with open(pdf_file, 'rb') as pdf:
+    """
+    Extracts text from a PDF file.
+
+    Args:
+        pdf_file (Path): Path to the PDF file.
+        n_page (int, optional): Number of pages to extract text from. Defaults to 1.
+        absent_txt_to (str, optional): Text to use when PDF text is absent. Defaults to 'Assignment'.
+
+    Returns:
+        list[str]: Extracted text from the PDF file.
+    """
+    with open(pdf_file, "rb") as pdf:
         reader = PdfReader(pdf, strict=False)
-        pdf_text = []
-
-        for page in reader.pages[:n_page]:
-            txt = page.extract_text()
-            if txt:
-                pdf_text.append(txt)
-            else:
-                pdf_text.append(absent_txt_to)
-
+        pdf_text = [
+            page.extract_text() or absent_txt_to for page in reader.pages[:n_page]
+        ]
     return pdf_text
 
 
-@dataclass
-class PathParser:
-    root_path: Path
-    month: str
+def get_month_dir_path(root_path: Path, month: str) -> Path:
+    """
+    Finds the directory for a specific month.
 
-    def __post_init__(self):
-        # Validate month name
-        if self.month not in month_name:
-            raise ValueError(f"'month' must be in {month_name}")
+    Args:
+        root_path (Path): Root directory path.
+        month (str): Name of the month.
 
-    def month_dir_path(self, path: Path) -> Path:
-        for i in path.iterdir():
-            if i.name == self.month:
-                return i
-        else:
-            raise FileNotFoundError(
-                f'Required month dir not found on {path.name!r}.'
-            )
-
-    def date_dirs(self, month_dir: Path) -> list[Path]:
-        return [date for date in month_dir.iterdir() if date.is_dir()]
-
-    def pdf_paths(self) -> list[Path]:
-        months_dir = self.month_dir_path(self.root_path)
-        dates_dir = self.date_dirs(months_dir)
-        pdf_paths = [f for date in dates_dir
-                     for f in date.iterdir()
-                     if f.suffix == '.pdf']
-        return pdf_paths
+    Returns:
+        Path: Path to the month's directory.
+    """
+    months_dir = [i for i in root_path.iterdir() if i.name == month]
+    if not months_dir:
+        raise FileNotFoundError(f"Required month dir not found: {month}")
+    return months_dir[0]
 
 
-@dataclass
-class ReadmeWriter:
-    file_obj: IO
+def get_pdf_paths(root_path: Path, month: str) -> list[Path]:
+    """
+    Gets paths of PDF files in a specific month's directory.
 
-    def write_header(self, month: str):
-        lines = [
-            f'# 🗂️ Assignments of {month}\n',
-            '\n',
-        ]
-        self.file_obj.writelines(lines)
+    Args:
+        root_path (Path): Root directory path.
+        month (str): Name of the month.
 
-    def write_bullet_points(
-        self,
-        pdf_paths: list[Path],
-        month: str
-    ) -> None:
-        """ Write the unordered list points in passed readme file. """
-        pdf_paths = sorted(pdf_paths, key=lambda x: int(x.name[:2]))
-        dates = [i.name[:2] for i in pdf_paths]
-
-        # Get the assignments_name from all pdf
-        assignments_name = []
-        for pdf_path in pdf_paths:
-            txt = extract_text_from_pdf(pdf_path)
-            assignments_name.append(
-                txt[0].replace('Assignment Questions', '')
-                .replace('\n', '')
-                .strip()
-            )
-
-        # Create markdown bullet points
-        lines = []
-        for date, name, pdf_path in zip(dates, assignments_name, pdf_paths):
-            parent_path = pdf_path.parent.name.replace(' ', '%20')
-            bullet = f'- **{date} {month} :** [**`{name}`**]({parent_path})\n'
-            lines.append(bullet)
-
-        self.file_obj.writelines(lines)
+    Returns:
+        list[Path]: List of paths to PDF files.
+    """
+    month_dir = get_month_dir_path(root_path, month)
+    dates_dir = [date for date in month_dir.iterdir() if date.is_dir()]
+    pdf_paths = [f for date in dates_dir for f in date.iterdir() if f.suffix == ".pdf"]
+    return sorted(pdf_paths, key=lambda x: int(x.name[:2]))
 
 
-@dataclass
-class Readme:
-    root_path: Path
-    month: str
+def write_bullet_points(file_obj: IO, pdf_paths: list[Path], month: str):
+    """
+    Writes bullet points to the given file object.
 
-    def __post_init__(self):
-        self.path_parser = PathParser(self.root_path, self.month)
+    Args:
+        file_obj (IO): File object to write to.
+        pdf_paths (list[Path]): List of paths to PDF files.
+        month (str): Name of the month.
+    """
+    for pdf_path in pdf_paths:
+        date = pdf_path.name[:2]
+        txt = extract_text_from_pdf(pdf_path)
+        assignment_name = (
+            txt[0].replace("Assignment Questions", "").replace("\n", "").strip()
+        )
+        parent_path = f"<{pdf_path.parent.name}>"
+        bullet = f"- **{date} {month} :** [**`{assignment_name}`**]({parent_path})\n"
+        file_obj.write(bullet)
 
-    @property
-    def readme_path(self) -> Path:
-        return self.root_path / self.month / 'README.md'
 
-    def write(self) -> None:
-        with open(self.readme_path, 'w') as f:
-            readme_parser = ReadmeWriter(f)
-            readme_parser.write_header(self.month)
-            readme_parser.write_bullet_points(
-                self.path_parser.pdf_paths(),
-                self.month
-            )
+def generate_readme(month: str, root_path: Path = Path(".")):
+    """
+    Generates a README file for a specified month.
+
+    Args:
+        month (str): Name of the month.
+        root_path (Path, optional): Root directory path. Defaults to current directory.
+    """
+    readme_path = root_path / month / "README.md"
+    with open(readme_path, "w") as f:
+        f.write(f"# 🗂️ Assignments of {month}\n\n")
+        write_bullet_points(f, get_pdf_paths(root_path, month), month)
+
+
+def main():
+    generate_readme("February")
+
+
+if __name__ == "__main__":
+    main()

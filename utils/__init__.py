@@ -1,2 +1,2 @@
-from utils.assignment import AssignmentFolder
-from utils.make_readme import Readme
+from .assignment import AssignmentFolder
+from .make_readme import generate_readme
