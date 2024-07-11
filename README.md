@@ -73,18 +73,6 @@ Using **PW Skills API** I analyze all their courses in **Jupyter Notebook** and 
 [![Streamlit Badge](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=fff&style=flat-square)](https://arv-anshul-working-with-pw-api-app-c056zb.streamlit.app)
 [![GitHub Badge](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=fff&style=flat-square)](https://github.com/arv-anshul/working-with-pw-api)
 
-### PW Skills Custom Theme
-
-**PW Skills's web page** default theme is very bright and has many clutters like chatbot, social links bar, etc. Using this theme you can remove them and make the web page more focused towards for learning your course.
-
-[![Custom Theme Badge](https://img.shields.io/badge/PW%20Custom%20Theme-7033FD?logo=fireship&logoColor=fff&style=for-the-badge)](https://userstyles.world/style/8474/cleaned-pwskills-com)
-
-[![Original Theme](./img/pw-skills-org-theme.png)](https://userstyles.world/style/8474/cleaned-pwskills-com)
-
-[![Custom Theme](./img/pw-skills-custom-theme.png)](https://userstyles.world/style/8474/cleaned-pwskills-com)
-
-> #### To use this theme you have to **change css selector** as your web page config.
-
 ## Created by [arv-anshul](https://github.com/arv-anshul)
 
 #### Check my other works 📎
