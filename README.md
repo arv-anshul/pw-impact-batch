@@ -2,45 +2,13 @@
 
 This repo contains all the **assignments** present in the Impact batch. There is also some **quizzes** in the batch but it was embedded in the website.
 
-## Table of Content
-
-- [Assignment Leaderboard](#assignment-leaderboard-)
-- [Repoistory File Structure](#repo-structure-)
-- [Additional Features](#additional-features-)
-  - [Automate the assignment folder creation](#automate-the-assignment-folder-creation-)
-  - [Automate git commit shell command](#automate-git-commit-shell-command-)
-  - [Impact Batch Assignments Solution](#impact-batch-assignments-solution)
-  - [PW Courses Analysis](#pw-courses-analysis)
-  - [PW Skills Experience Portal](#pw-skills-experience-portal)
-  - [PW Skills API](#pw-skills-api)
-  - [PW Skills Custom Theme](#pw-skills-custom-theme)
-- [Creator](#created-by-arv-anshul)
-
 ## Assignment Leaderboard 🥇
 
-<img src="./img/1.png" height=100>
-<img src="./img/2.png" height=100>
-<img src="./img/3.png" height=100>
-
-## Repo Structure 📁
-
-```mermaid
-flowchart LR
-
-repo{pw-impact-batch}
-
-repo  --> ut[utils]
-repo --> month-f[Months Folders]
-repo --> repo-sh([push_to_github.sh])
-repo --> repo-md([README.md])
-
-ut --> ut1{{assignment.py}}
-ut --> ut2{{commit_assignment.py}}
-
-month-f --> date-f[Dates Folders]
-date-f --> 1{{Answer.ipynb}}
-date-f --> 2{{Question.pdf}}
-```
+<p align="center">
+  <img src="./img/1.png" width="30%">
+  <img src="./img/2.png" width="30%">
+  <img src="./img/3.png" width="30%">
+</p>
 
 ## Additional Features 📌
 
@@ -54,10 +22,8 @@ from utils import AssignmentFolder
 
 f = AssignmentFolder(
     date=date(2023, 3, 25),
-    url="""
-https://drive.google.com/file/d/1cRhT10uk6tFLe7GNF0YJJ3-U2J8vnsLp/view?usp=sharing
-""",
-    type='file'
+    url="https://drive.google.com/file/d/1cRhT10uk6tFLe7GNF0YJJ3-U2J8vnsLp/view?usp=sharing",
+    type="file"
 )
 f.make()
 ```
@@ -76,8 +42,7 @@ You can skip the commit message. _Only applicable for assignment files_.
 ```bash
 python3 utils/commit_assignment.py --file-name February/07\ Feb
 
-# Note:
-    # The default commit message is "Added <<file_name>> assignment."
+# NOTE: The default commit message is "Added <<file_name>> assignment."
 ```
 
 ### Impact Batch Assignments Solution
