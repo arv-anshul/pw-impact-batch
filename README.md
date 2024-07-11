@@ -84,6 +84,8 @@ python3 utils/commit_assignment.py --file-name February/07\ Feb
 
 [![Streamlit Badge](https://img.shields.io/badge/Solutions-FF4B4B?logo=streamlit&logoColor=fff&style=flat-square)](https://pw-assignment-solution.streamlit.app/)
 
+<p align="center"><img src="img/pw-assignments-solution-diagram.png" alt="app-diagram" title="App Diagram" width="60%"></p>
+
 [![Assignment Solution Web Page](./img/assignment-solution-web-page.png)](https://pw-assignment-solution.streamlit.app/)
 
 ### PW Courses Analysis
